@@ -67,11 +67,11 @@ auth_algs=1
 wmm_enabled=1" >hostapd.conf
 fi
 
-pkill dnsmasq
-pkill hostapd
-
 dnsmasq
 hostapd hostapd.conf
+
+pkill dnsmasq
+pkill hostapd
 
 sysctl -w net.ipv4.ip_forward=0
 
