@@ -1,0 +1,80 @@
+#!/bin/bash
+
+if [ "$(id -u)" -ne 0 ]; then
+  echo -e "This script must be run as root, use 'sudo' or run it as root."
+  exit 1
+fi
+
+command -v dnsmasq > /dev/null 2>&1 || { echo >&2 "I require dnsmasq but it's not installed. Install it. Aborting."; exit 1; }
+command -v hostapd > /dev/null 2>&1 || { echo >&2 "I require hostapd but it's not installed. Install it. Aborting."; exit 1; }
+
+usage() {
+    echo "Usage: $0 SSID IFACE PSK (optional)"
+    echo "Example: $0 My_WiFi wlan0 123456"
+    exit 1
+}
+
+if [ "$#" -lt 2 ]; then
+    usage
+fi
+
+SSID="$1"
+IFACE="$2"
+PSK="$3"
+
+iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
+iptables -t mangle -F
+iptables -t mangle -X
+iptables -P INPUT ACCEPT
+iptables -P FORWARD ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -t nat -A PREROUTING -p tcp --destination-port 80 -j REDIRECT --to-port 8080
+iptables -t nat -A POSTROUTING -o $IFACE -j MASQUERADE
+
+sysctl -w net.ipv4.ip_forward=1
+
+ip link set $IFACE down
+ip addr add 192.168.1.1/24 dev $IFACE
+ip link set $IFACE up
+
+echo "interface=$IFACE
+dhcp-range=192.168.1.30,192.168.1.254,12h" >/etc/dnsmasq.conf
+
+if [ "$PSK" ]; then
+    echo "interface=$IFACE
+driver=nl80211
+ssid=$SSID
+hw_mode=g
+channel=6
+wmm_enabled=1
+macaddr_acl=0
+auth_algs=1
+ignore_broadcast_ssid=0
+wpa=2
+wpa_key_mgmt=WPA-PSK
+wpa_passphrase=$PSK
+rsn_pairwise=CCMP" >hostapd.conf
+else
+    echo "interface=$IFACE
+driver=nl80211
+ssid=$SSID
+hw_mode=g
+channel=6
+auth_algs=1
+wmm_enabled=1" >hostapd.conf
+fi
+
+pkill dnsmasq
+pkill hostapd
+
+dnsmasq
+hostapd hostapd.conf
+
+sysctl -w net.ipv4.ip_forward=0
+
+ip link set $IFACE down
+ip addr del 192.168.1.1/24 dev $IFACE
+ip link set $IFACE up
