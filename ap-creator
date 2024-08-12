@@ -9,13 +9,13 @@ command -v dnsmasq > /dev/null 2>&1 || { echo >&2 "I require dnsmasq but it's no
 command -v hostapd > /dev/null 2>&1 || { echo >&2 "I require hostapd but it's not installed. Install it. Aborting."; exit 1; }
 
 usage() {
-    echo "Usage: $0 SSID IFACE PSK (optional)"
-    echo "Example: $0 My_WiFi wlan0 123456"
-    exit 1
+  echo "Usage: $0 SSID IFACE PSK (optional)"
+  echo "Example: $0 My_WiFi wlan0 123456"
+  exit 1
 }
 
 if [ "$#" -lt 2 ]; then
-    usage
+  usage
 fi
 
 SSID="$1"
@@ -41,10 +41,10 @@ ip addr add 192.168.1.1/24 dev $IFACE
 ip link set $IFACE up
 
 echo "interface=$IFACE
-dhcp-range=192.168.1.30,192.168.1.254,12h" >/etc/dnsmasq.conf
+dhcp-range=192.168.1.30,192.168.1.254,12h" >dnsmasq.conf
 
 if [ "$PSK" ]; then
-    echo "interface=$IFACE
+  echo "interface=$IFACE
 driver=nl80211
 ssid=$SSID
 hw_mode=g
@@ -58,7 +58,7 @@ wpa_key_mgmt=WPA-PSK
 wpa_passphrase=$PSK
 rsn_pairwise=CCMP" >hostapd.conf
 else
-    echo "interface=$IFACE
+  echo "interface=$IFACE
 driver=nl80211
 ssid=$SSID
 hw_mode=g
@@ -67,7 +67,7 @@ auth_algs=1
 wmm_enabled=1" >hostapd.conf
 fi
 
-dnsmasq
+dnsmasq -C dnsmasq.conf
 hostapd hostapd.conf
 
 pkill dnsmasq
