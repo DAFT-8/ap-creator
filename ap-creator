@@ -10,7 +10,7 @@ command -v hostapd > /dev/null 2>&1 || { echo >&2 "I require hostapd but it's no
 
 usage() {
   echo "Usage: $0 SSID IFACE PSK (optional)"
-  echo "Example: $0 My_WiFi wlan0 123456"
+  echo "Example: $0 My_WiFi wlan0 123456789"
   exit 1
 }
 
@@ -25,8 +25,14 @@ PSK="$3"
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
+iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination 192.168.1.1:53
+iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A PREROUTING -p tcp --dport 53 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A PREROUTING -p udp --dport 53 -j DNAT --to-destination 192.168.1.1:53
+iptables -t nat -A OUTPUT -p tcp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
+iptables -t nat -A OUTPUT -p udp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
+iptables -t nat -A PREROUTING -p tcp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
+iptables -t nat -A PREROUTING -p udp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.1.1:80
 iptables -t nat -A PREROUTING -p tcp --dport 443 -j DNAT --to-destination 192.168.1.1:80
 iptables -t nat -A PREROUTING -p tcp --dport 443 -j REDIRECT --to-ports 80
