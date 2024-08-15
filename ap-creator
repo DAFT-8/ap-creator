@@ -50,7 +50,7 @@ driver=nl80211
 ssid=$SSID
 hw_mode=g
 channel=6
-wmm_enabled=1
+wmm_enabled=0
 macaddr_acl=0
 auth_algs=1
 ignore_broadcast_ssid=0
@@ -64,8 +64,10 @@ driver=nl80211
 ssid=$SSID
 hw_mode=g
 channel=6
+wmm_enabled=0
+macaddr_acl=0
 auth_algs=1
-wmm_enabled=1" >hostapd.conf
+ignore_broadcast_ssid=0" >hostapd.conf
 fi
 
 echo "interface=$IFACE
@@ -85,7 +87,7 @@ log-dhcp
 log-queries" >dnsmasq.conf
 
 hostapd hostapd.conf -B
-dnsmasq -C dnsmasq.conf -d --cache-size=0
+dnsmasq -C dnsmasq.conf -d --cache-size=0 --no-negcache
 
 pkill hostapd
 pkill dnsmasq
