@@ -43,7 +43,7 @@ ip link set $IFACE down
 ip addr add 192.168.1.1/24 dev $IFACE
 ip link set $IFACE up
 
-sudo iw dev $IFACE set power_save off
+iw dev $IFACE set power_save off
 
 if [ "$PSK" ]; then
   echo "interface=$IFACE
