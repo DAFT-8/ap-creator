@@ -25,6 +25,7 @@ PSK="$3"
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
+iptables -t filter -A INPUT -p tcp --dport 443 -j REJECT
 iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A OUTPUT -p tcp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
@@ -34,7 +35,6 @@ iptables -t nat -A PREROUTING -p udp --dport 53 -j DNAT --to-destination 192.168
 iptables -t nat -A PREROUTING -p tcp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A PREROUTING -p udp --dport 5353 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A PREROUTING -p tcp --dport 80 -j DNAT --to-destination 192.168.1.1:80
-iptables -t nat -A PREROUTING -p tcp --dport 443 -j REJECT
 iptables -t nat -A POSTROUTING -o $IFACE -j MASQUERADE
 
 sysctl -w net.ipv4.ip_forward=1
