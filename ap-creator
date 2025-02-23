@@ -10,8 +10,8 @@ command -v hostapd > /dev/null 2>&1 || { echo >&2 "I require hostapd but it's no
 command -v iw > /dev/null 2>&1 || { echo >&2 "I require iw but it's not installed. Install it. Aborting."; exit 1; }
 
 usage() {
-  echo "Usage: $0 SSID IFACE PSK (optional)"
-  echo "Example: $0 My_WiFi wlan0 123456789"
+  echo "Usage: $0 IFACE SSID PSK (optional)"
+  echo "Example: $0 wlan0 My_WiFi 123456789"
   exit 1
 }
 
@@ -19,8 +19,8 @@ if [ "$#" -lt 2 ]; then
   usage
 fi
 
-SSID="$1"
-IFACE="$2"
+IFACE="$1"
+SSID="$2"
 PSK="$3"
 
 iptables -P INPUT ACCEPT
@@ -104,6 +104,9 @@ pkill hostapd
 pkill dnsmasq
 
 iptables -F
+iptables -X
+iptables -t nat -F
+iptables -t nat -X
 
 sysctl -w net.ipv4.ip_forward=0
 
