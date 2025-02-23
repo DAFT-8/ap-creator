@@ -28,6 +28,7 @@ iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -t filter -A INPUT -p tcp --dport 443 -j REJECT
 iptables -t nat -A OUTPUT -p tcp --syn -j REDIRECT --to-ports 80
+iptables -t nat -A OUTPUT -p icmp -j REDIRECT --to-ports 80
 iptables -t nat -A OUTPUT -p udp -j REDIRECT --to-ports 53
 iptables -t nat -A OUTPUT -p tcp --dport 53 -j DNAT --to-destination 192.168.1.1:53
 iptables -t nat -A OUTPUT -p udp --dport 53 -j DNAT --to-destination 192.168.1.1:53
