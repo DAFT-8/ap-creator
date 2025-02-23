@@ -110,8 +110,6 @@ dnsmasq -C dnsmasq.conf -d --cache-size=0 --no-negcache
 pkill hostapd
 pkill dnsmasq
 
-iptables -t filter -F
-iptables -t filter -X
 iptables -t nat -F
 iptables -t nat -X
 
