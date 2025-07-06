@@ -10,7 +10,7 @@ command -v hostapd > /dev/null 2>&1 || { echo >&2 "I require hostapd but it's no
 command -v iw > /dev/null 2>&1 || { echo >&2 "I require iw but it's not installed. Install it. Aborting."; exit 1; }
 
 usage() {
-  echo "Usage: $0 IFACE SSID PSK (optional)"
+  echo "Usage: $0 IFACE SSID (PSK optional)"
   echo "Example: $0 wlan0 My_WiFi 123456789"
   exit 1
 }
