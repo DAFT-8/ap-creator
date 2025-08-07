@@ -23,6 +23,9 @@ IFACE="$1"
 SSID="$2"
 PSK="$3"
 
+echo -n "Enter a MAC address (default: empty): "
+read MAC
+
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
 iptables -P OUTPUT ACCEPT
@@ -57,6 +60,7 @@ iptables -t nat -A POSTROUTING -o $IFACE -j MASQUERADE
 sysctl -w net.ipv4.ip_forward=1
 
 ip link set $IFACE down
+[ "$MAC" ] && macchanger -m "$MAC"
 ip addr add 192.168.1.1/24 dev $IFACE
 ip link set $IFACE up
 
@@ -120,5 +124,6 @@ iptables -t nat -X
 sysctl -w net.ipv4.ip_forward=0
 
 ip link set $IFACE down
+[ "$MAC" ] && macchanger -p
 ip addr del 192.168.1.1/24 dev $IFACE
 ip link set $IFACE up
