@@ -8,7 +8,6 @@ fi
 command -v dnsmasq > /dev/null 2>&1 || { echo >&2 "I require dnsmasq but it's not installed. Install it. Aborting."; exit 1; }
 command -v hostapd > /dev/null 2>&1 || { echo >&2 "I require hostapd but it's not installed. Install it. Aborting."; exit 1; }
 command -v iw > /dev/null 2>&1 || { echo >&2 "I require iw but it's not installed. Install it. Aborting."; exit 1; }
-command -v macchanger > /dev/null 2>&1 || { echo >&2 "I require macchanger but it's not installed. Install it. Aborting."; exit 1; }
 
 usage() {
   echo "Usage: $0 IFACE SSID (PSK optional)"
@@ -26,6 +25,7 @@ PSK="$3"
 
 echo -n "Enter a MAC address (default: empty): "
 read MAC
+[ "$MAC" ] && command -v macchanger > /dev/null 2>&1 || { echo >&2 "I require macchanger but it's not installed. Install it. Aborting."; exit 1; }
 
 iptables -P INPUT ACCEPT
 iptables -P FORWARD ACCEPT
